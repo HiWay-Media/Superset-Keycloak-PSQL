@@ -1,11 +1,11 @@
 from flask_appbuilder.security.manager import AUTH_OID
-from superset.security import SupersetSecurityManager
-from flask_oidc import OpenIDConnect
-from flask_appbuilder.security.views import AuthOIDView
-from flask_login import login_user
-from urllib.parse import quote
-from flask_appbuilder.views import expose
-from flask import request, redirect
+from superset.security                 import SupersetSecurityManager
+from flask_oidc                        import OpenIDConnect
+from flask_appbuilder.security.views   import AuthOIDView
+from flask_login                       import login_user
+from urllib.parse                      import quote
+from flask_appbuilder.views            import expose
+from flask                             import request, redirect
 #
 AUTH_ROLES_SYNC_AT_LOGIN = True
 #
@@ -34,6 +34,8 @@ class AuthOIDCView(AuthOIDView):
                 roles += [default_role, ]
                 user = sm.add_user(info.get('preferred_username'), info.get('given_name', ''), info.get('family_name', ''),
                                    info.get('email'), [sm.find_role(role) for role in roles])
+            #
+            print("login user ", user)
             # need to check if is it correct
             #setattr(user, "is_active", True)
             #
