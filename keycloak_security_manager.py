@@ -33,10 +33,12 @@ class AuthOIDCView(AuthOIDView):
                 info    = oidc.user_getinfo(['preferred_username', 'given_name', 'family_name', 'email', 'roles'])
                 roles   = info.get('roles', [])
                 roles   += [default_role, ]
+                sub     = info.get("sub")
+                print("sub", sub)
                 #user = sm.add_user(info.get('preferred_username'), info.get('given_name', ''), info.get('family_name', ''),
                 #                   info.get('email'), [sm.find_role(role) for role in roles])
                 user    = sm.add_user(
-                    username=info.get("sub"),
+                    username=info.get("email"),
                     first_name=info.get("given_name", ""),
                     last_name=info.get("family_name", ""),
                     email=info.get("email"),
