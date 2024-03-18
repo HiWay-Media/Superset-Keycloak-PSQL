@@ -1,3 +1,6 @@
+#
+import logging
+#
 from flask_appbuilder.security.manager import AUTH_OID
 from superset.security                 import SupersetSecurityManager
 from flask_oidc                        import OpenIDConnect
@@ -8,6 +11,8 @@ from flask_appbuilder.views            import expose
 from flask                             import request, redirect
 #
 AUTH_ROLES_SYNC_AT_LOGIN = True
+#
+logger = logging.getLogger(__name__)
 #
 class OIDCSecurityManager(SupersetSecurityManager):
     #
@@ -34,7 +39,7 @@ class AuthOIDCView(AuthOIDView):
                 roles   = info.get('roles', [])
                 roles   += [default_role, ]
                 sub     = info.get("sub")
-                print("roles", roles)
+                logger.debug("roles", roles)
                 #user = sm.add_user(info.get('preferred_username'), info.get('given_name', ''), info.get('family_name', ''),
                 #                   info.get('email'), [sm.find_role(role) for role in roles])
                 user    = sm.add_user(
