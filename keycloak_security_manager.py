@@ -16,34 +16,32 @@ class OIDCSecurityManager(SupersetSecurityManager):
         if self.auth_type == AUTH_OID:
             self.oid = OpenIDConnect(self.appbuilder.get_app)
         self.authoidview = AuthOIDCView
+    #
 #
 class AuthOIDCView(AuthOIDView):
     #
     @expose('/login/', methods=['GET', 'POST'])
     def login(self, flag=True):
-        sm = self.appbuilder.sm
-        oidc = sm.oid
-        default_role = "Gamma"
+        sm              = self.appbuilder.sm
+        oidc            = sm.oid
+        default_role    = "Gamma"
         #
         @self.appbuilder.sm.oid.require_login
         def handle_login():
             user = sm.auth_user_oid(oidc.user_getfield('email'))
             if user is None:
-                info = oidc.user_getinfo(['preferred_username', 'given_name', 'family_name', 'email', 'roles'])
-                roles = info.get('roles', [])
-                roles += [default_role, ]
+                info    = oidc.user_getinfo(['preferred_username', 'given_name', 'family_name', 'email', 'roles'])
+                roles   = info.get('roles', [])
+                roles   += [default_role, ]
                 #user = sm.add_user(info.get('preferred_username'), info.get('given_name', ''), info.get('family_name', ''),
                 #                   info.get('email'), [sm.find_role(role) for role in roles])
-                user = sm.add_user(
+                user    = sm.add_user(
                     username=info.get("sub"),
                     first_name=info.get("given_name", ""),
                     last_name=info.get("family_name", ""),
                     email=info.get("email"),
                     role=[sm.find_role(role) for role in roles],
                 )
-            #
-            print("login user ", user)
-            user.is_active = True
             #
             login_user(user, remember=False)
             return redirect(self.appbuilder.get_url_for_index)
