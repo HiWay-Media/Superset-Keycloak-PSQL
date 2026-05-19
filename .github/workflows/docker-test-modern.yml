@@ -44,6 +44,8 @@ jobs:
       - name: Prepare
         id: prep
         run: |
+          IMAGE_REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_UNDER_TEST="ghcr.io/${IMAGE_REPO}-modern:test"
           BASE_TAG="${{ github.event.inputs.superset_tag }}"
           if [ -z "$BASE_TAG" ]; then
             BASE_TAG=6.1.0
@@ -52,6 +54,7 @@ jobs:
           if [ -z "$KEYCLOAK_TAG" ]; then
             KEYCLOAK_TAG=26.1
           fi
+          echo "image_under_test=${IMAGE_UNDER_TEST}" >> "$GITHUB_OUTPUT"
           echo "base_tag=${BASE_TAG}" >> "$GITHUB_OUTPUT"
           echo "keycloak_tag=${KEYCLOAK_TAG}" >> "$GITHUB_OUTPUT"
 
@@ -64,7 +67,7 @@ jobs:
           context: .
           file: ./Dockerfile.modern
           load: true
-          tags: superset-keycloak-modern:test
+          tags: ${{ steps.prep.outputs.image_under_test }}
           build-args: |
             SUPERSET_TAG=${{ steps.prep.outputs.base_tag }}
 
@@ -74,10 +77,13 @@ jobs:
           services:
             db:
               image: postgres:15-alpine
+              restart: unless-stopped
               environment:
                 POSTGRES_DB: superset
                 POSTGRES_USER: superset
                 POSTGRES_PASSWORD: superset
+              volumes:
+                - superset_db_data:/var/lib/postgresql/data
               healthcheck:
                 test: ["CMD-SHELL", "pg_isready -U superset -d superset"]
                 interval: 5s
@@ -86,6 +92,7 @@ jobs:
 
             keycloak:
               image: quay.io/keycloak/keycloak:${{ steps.prep.outputs.keycloak_tag }}
+              restart: unless-stopped
               command: ["start-dev", "--http-port=8080", "--hostname-strict=false"]
               ports:
                 - "8080:8080"
@@ -94,10 +101,13 @@ jobs:
                 KEYCLOAK_ADMIN_PASSWORD: admin
 
             superset:
-              image: superset-keycloak-modern:test
+              image: ${{ steps.prep.outputs.image_under_test }}
+              restart: unless-stopped
               depends_on:
                 db:
                   condition: service_healthy
+                keycloak:
+                  condition: service_started
               ports:
                 - "8088:8088"
               environment:
@@ -110,6 +120,11 @@ jobs:
                 SECRET_KEY: ci-secret-key
                 OIDC_ENABLE: "False"
                 SMTP_ENABLE: "False"
+              healthcheck:
+                test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8088/health | grep -qi ok"]
+                interval: 10s
+                timeout: 5s
+                retries: 30
               command: >
                 /bin/sh -ec "
                 superset db upgrade &&
@@ -121,6 +136,9 @@ jobs:
                 --password admin &&
                 superset init &&
                 /usr/bin/run-server.sh"
+
+          volumes:
+            superset_db_data:
           EOF
 
       - name: Start stack

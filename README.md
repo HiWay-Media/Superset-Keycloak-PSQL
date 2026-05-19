@@ -81,10 +81,16 @@ ghcr.io/<owner>/<repo>-modern
 The repository includes a dedicated CI workflow to validate `Dockerfile.modern` with a Docker Compose smoke test:
 
 - Workflow: [docker-test-modern.yml](.github/workflows/docker-test-modern.yml)
-- It builds the modern image locally in CI.
+- It builds the modern image locally in CI using the repository-based tag `ghcr.io/<owner>/<repo>-modern:test`.
 - It starts Postgres + Superset with Docker Compose.
 - It starts a Keycloak container as part of the stack and verifies Keycloak readiness.
 - It runs Superset database initialization and checks `http://127.0.0.1:8088/health`.
+
+Compose improvements included in CI:
+
+- Persistent named volume for Postgres data.
+- `restart: unless-stopped` on services for better resilience during startup.
+- Service health checks and startup ordering (`depends_on`) for more stable test runs.
 
 Triggers:
 
