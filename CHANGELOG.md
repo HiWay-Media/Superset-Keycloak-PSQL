@@ -12,3 +12,4 @@ All notable changes to this project will be documented in this file.
 - Fixed `Dockerfile.modern` dependency install to reduce CI build failures (`Flask-OpenID==1.3.0` and `psycopg2-binary==2.9.9`).
 - Set modern default base image to Apache Superset `6.1.0` in both `Dockerfile.modern` and `docker-publish-modern.yml`.
 - Added `.github/workflows/docker-test-modern.yml` to run a Docker Compose smoke test for the modern image (`Dockerfile.modern`) with Postgres + Superset health check.
+- Updated `.github/workflows/docker-test-modern.yml` to include Keycloak in the Docker Compose stack and made Keycloak image tag configurable (`keycloak_tag`, default `26.1`).

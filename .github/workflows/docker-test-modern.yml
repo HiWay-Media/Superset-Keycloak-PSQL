@@ -25,6 +25,10 @@ on:
         description: "Base apache/superset tag for Dockerfile.modern"
         required: false
         default: "6.1.0"
+      keycloak_tag:
+        description: "Keycloak image tag used in compose smoke test"
+        required: false
+        default: "26.1"
 
 jobs:
   modern-compose-smoke-test:
@@ -44,7 +48,12 @@ jobs:
           if [ -z "$BASE_TAG" ]; then
             BASE_TAG=6.1.0
           fi
+          KEYCLOAK_TAG="${{ github.event.inputs.keycloak_tag }}"
+          if [ -z "$KEYCLOAK_TAG" ]; then
+            KEYCLOAK_TAG=26.1
+          fi
           echo "base_tag=${BASE_TAG}" >> "$GITHUB_OUTPUT"
+          echo "keycloak_tag=${KEYCLOAK_TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -74,6 +83,15 @@ jobs:
                 interval: 5s
                 timeout: 5s
                 retries: 20
+
+            keycloak:
+              image: quay.io/keycloak/keycloak:${{ steps.prep.outputs.keycloak_tag }}
+              command: ["start-dev", "--http-port=8080", "--hostname-strict=false"]
+              ports:
+                - "8080:8080"
+              environment:
+                KEYCLOAK_ADMIN: admin
+                KEYCLOAK_ADMIN_PASSWORD: admin
 
             superset:
               image: superset-keycloak-modern:test
@@ -107,6 +125,19 @@ jobs:
 
       - name: Start stack
         run: docker compose -f docker-compose.modern-ci.yml up -d
+
+      - name: Wait for Keycloak readiness
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:8080/realms/master/.well-known/openid-configuration >/dev/null; then
+              echo "Keycloak is ready"
+              exit 0
+            fi
+            sleep 5
+          done
+
+          echo "Keycloak did not become ready in time"
+          exit 1
 
       - name: Wait for Superset health endpoint
         run: |

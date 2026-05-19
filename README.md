@@ -83,12 +83,13 @@ The repository includes a dedicated CI workflow to validate `Dockerfile.modern` 
 - Workflow: [docker-test-modern.yml](.github/workflows/docker-test-modern.yml)
 - It builds the modern image locally in CI.
 - It starts Postgres + Superset with Docker Compose.
+- It starts a Keycloak container as part of the stack and verifies Keycloak readiness.
 - It runs Superset database initialization and checks `http://127.0.0.1:8088/health`.
 
 Triggers:
 
 - On push and pull request to `main`/`master` when modern Docker/config files change.
-- Manual run via `workflow_dispatch` with optional `superset_tag` input (default `6.1.0`).
+- Manual run via `workflow_dispatch` with optional `superset_tag` (default `6.1.0`) and `keycloak_tag` (default `26.1`) inputs.
 
 ## Contributions
 Contributions to the Superset-Keycloak repository are welcome! If you find any issues, have suggestions for improvements, or want to contribute enhancements, please open an issue or submit a pull request on the GitHub repository.
