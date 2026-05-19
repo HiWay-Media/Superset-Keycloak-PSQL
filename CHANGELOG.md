@@ -9,3 +9,4 @@ All notable changes to this project will be documented in this file.
 - Kept `.github/workflows/docker-publish.yml` unchanged for production image publishing.
 - Added `.github/workflows/docker-publish-modern.yml` to publish a separate modern image to `ghcr.io/<owner>/<repo>-modern`.
 - Fixed `.github/workflows/docker-publish-modern.yml` repo metadata step for `actions/github-script@v7` by switching to `github.rest.repos.get(...)`.
+- Fixed `Dockerfile.modern` dependency install to reduce CI build failures (`Flask-OpenID==1.3.0` and `psycopg2-binary==2.9.9`).

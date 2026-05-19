@@ -55,6 +55,8 @@ docker build -f Dockerfile.modern \
 	-t superset-keycloak:modern-4.1.2 .
 ```
 
+Note for modern builds: `Dockerfile.modern` uses `psycopg2-binary` to avoid native Postgres build toolchain issues during CI builds.
+
 ## GitHub Actions publish
 
 Production image publish remains unchanged via [docker-publish.yml](.github/workflows/docker-publish.yml), triggered by tags matching `v*`.
