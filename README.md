@@ -41,7 +41,7 @@ Build the stable image:
 docker build -f Dockerfile -t superset-keycloak:stable .
 ```
 
-Build the updated image (default tag: `latest`):
+Build the updated image (default tag: `6.1.0`):
 
 ```bash
 docker build -f Dockerfile.modern -t superset-keycloak:modern .
@@ -55,7 +55,7 @@ docker build -f Dockerfile.modern \
 	-t superset-keycloak:modern-4.1.2 .
 ```
 
-Note for modern builds: `Dockerfile.modern` uses `psycopg2-binary` to avoid native Postgres build toolchain issues during CI builds.
+Note for modern builds: `Dockerfile.modern` defaults to Apache Superset `6.1.0` and uses `psycopg2-binary` to avoid native Postgres build toolchain issues during CI builds.
 
 ## GitHub Actions publish
 
@@ -66,7 +66,7 @@ Production image publish remains unchanged via [docker-publish.yml](.github/work
 Modern image publish is fully isolated in [docker-publish-modern.yml](.github/workflows/docker-publish-modern.yml):
 
 - Push tag `modern-v1.2.3` to publish modern image tags `1.2.3` and `latest`.
-- Or run the workflow manually (`workflow_dispatch`) and set `superset_tag` to pin the base Apache Superset image.
+- Or run the workflow manually (`workflow_dispatch`) and set `superset_tag` (default `6.1.0`) to pin the base Apache Superset image.
 - Modern image path: `ghcr.io/<owner>/<repo>-modern`.
 
 Published image base:

@@ -12,7 +12,7 @@ on:
       superset_tag:
         description: "Base apache/superset tag for Dockerfile.modern"
         required: false
-        default: "latest"
+        default: "6.1.0"
 
 jobs:
   superset-docker-modern:
@@ -52,7 +52,7 @@ jobs:
 
           BASE_TAG="${{ github.event.inputs.superset_tag }}"
           if [ -z "$BASE_TAG" ]; then
-            BASE_TAG=latest
+            BASE_TAG=6.1.0
           fi
 
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"

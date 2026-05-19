@@ -10,3 +10,4 @@ All notable changes to this project will be documented in this file.
 - Added `.github/workflows/docker-publish-modern.yml` to publish a separate modern image to `ghcr.io/<owner>/<repo>-modern`.
 - Fixed `.github/workflows/docker-publish-modern.yml` repo metadata step for `actions/github-script@v7` by switching to `github.rest.repos.get(...)`.
 - Fixed `Dockerfile.modern` dependency install to reduce CI build failures (`Flask-OpenID==1.3.0` and `psycopg2-binary==2.9.9`).
+- Set modern default base image to Apache Superset `6.1.0` in both `Dockerfile.modern` and `docker-publish-modern.yml`.

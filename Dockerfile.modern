@@ -1,4 +1,4 @@
-ARG SUPERSET_TAG=latest
+ARG SUPERSET_TAG=6.1.0
 FROM apache/superset:${SUPERSET_TAG}
 
 USER root
