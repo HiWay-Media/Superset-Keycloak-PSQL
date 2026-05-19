@@ -76,6 +76,20 @@ ghcr.io/<owner>/<repo>
 ghcr.io/<owner>/<repo>-modern
 ```
 
+## GitHub Actions modern test (Docker Compose)
+
+The repository includes a dedicated CI workflow to validate `Dockerfile.modern` with a Docker Compose smoke test:
+
+- Workflow: [docker-test-modern.yml](.github/workflows/docker-test-modern.yml)
+- It builds the modern image locally in CI.
+- It starts Postgres + Superset with Docker Compose.
+- It runs Superset database initialization and checks `http://127.0.0.1:8088/health`.
+
+Triggers:
+
+- On push and pull request to `main`/`master` when modern Docker/config files change.
+- Manual run via `workflow_dispatch` with optional `superset_tag` input (default `6.1.0`).
+
 ## Contributions
 Contributions to the Superset-Keycloak repository are welcome! If you find any issues, have suggestions for improvements, or want to contribute enhancements, please open an issue or submit a pull request on the GitHub repository.
 
