@@ -2,6 +2,9 @@ name: Docker SuperSet Keycloak Modern
 
 on:
   push:
+    branches: 
+      - master
+      - main
     tags:
       - modern-v*
   workflow_dispatch:
