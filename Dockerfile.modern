@@ -8,17 +8,17 @@ ENV PIP_NO_CACHE_DIR=1
 
 RUN pip install --no-cache-dir \
     itsdangerous==2.2.0 \
-    flask-oidc==1.4.0 \
-    Flask-OpenID==1.3.0 \
+    Authlib==1.3.2 \
+    PyJWT==2.9.0 \
     psycopg2-binary==2.9.9 \
     lunarcalendar==0.0.9 \
     tqdm==4.66.5 \
     cython==0.29.37
 
-COPY superset_config.py /app/superset_config.py
+COPY superset_config_modern.py /app/superset_config.py
 ENV SUPERSET_CONFIG_PATH=/app/superset_config.py
 
-COPY keycloak_security_manager.py /app/pythonpath/keycloak_security_manager.py
+COPY keycloak_security_manager_modern.py /app/pythonpath/keycloak_security_manager_modern.py
 
 USER superset
 CMD ["/bin/sh", "-c", "/usr/bin/run-server.sh"]
